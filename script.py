@@ -1,3 +1,4 @@
+import csv
 import json
 import pickle
 import argparse
@@ -90,6 +91,15 @@ def main(args):
 
     with open(f'items{args.at}.pkl', 'wb') as wfile:
         pickle.dump(new_res, wfile)
+
+    new_res.sort(key=lambda x:x.created_at)
+    with open(f'items{args.at}.csv', 'w') as wfile:
+        writer = csv.writer(wfile, delimiter=',',
+                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+        writer.writerow(Item.keys)
+        for item in new_res:
+            dct = item.get_dct()
+            writer.writerow([dct[key] for key in Item.keys])
 
     res.sort(key=lambda x:x.created_at)
     print(*res[-args.number_of_results:], sep='\n')

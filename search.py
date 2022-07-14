@@ -33,6 +33,15 @@ def get_npages(urls, *args, **kwargs):
 
 class Item:
     price_regex = '([\$€[\d,]+|[\d,]+ ֏) (ամսական|օրական)'
+    keys = [
+        'url',
+        'price',
+        'rooms',
+        'sqm',
+        'agency',
+        'created_at',
+        'info',
+    ]
 
     def __init__(self, url):
         self.price = None
@@ -43,6 +52,7 @@ class Item:
         self.sqm = None
         self.agency = False
         self.main_img_url = None
+        self.created_at = None
 
     def set_price(self, price):
         m = re.match(self.price_regex, price)
@@ -72,11 +82,11 @@ class Item:
             self.price = m * int(price_group[:-1].strip().replace(',', ''))
         else:
             if price_group[0] == '$':
-                # USD rate ~ 510
-                self.price = 510 * m * int(price_group[1:].strip().replace(',', ''))
+                # USD rate ~ 430
+                self.price = 430 * m * int(price_group[1:].strip().replace(',', ''))
             else:
-                # EUR rate ~ 555
-                self.price = 555 * m * int(price_group[1:].strip().replace(',', ''))
+                # EUR rate ~ 445
+                self.price = 445 * m * int(price_group[1:].strip().replace(',', ''))
 
     def set_data(self, line):
         m = re.search('(\d) սեն', line)
@@ -109,6 +119,17 @@ class Item:
 
     def __ne__(self, other):
         return self.url != other.url
+
+    def get_dct(self):
+        return {
+            'price': self.price,
+            'url': self.url,
+            'info': self.info,
+            'rooms': self.rooms,
+            'sqm': self.sqm,
+            'agency': self.agency,
+            'created_at': str(self.created_at)
+        }
 
 
 class ListAmParser(HTMLParser):
