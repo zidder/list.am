@@ -27,6 +27,7 @@ def parse_args():
     )
     parser.add_argument('--low-price', type=int, default=100000)
     parser.add_argument('--high-price', type=int, default=300000)
+    parser.add_argument('--image-filter', type=bool, default=True)
     parser.add_argument('--ignore-cache', type=bool, default=False)
     parser.add_argument('--number-of-results', '-n', type=int, default=100,
                         help="0 for seeing all results, can be a lot")
@@ -58,27 +59,12 @@ def main(args):
 
     def img_filter(item):
         # FIXME: IDK if I need this
-        if item.main_img_url is None: return False
-        a = ['657/43705657',
-             '654/43705654',
-             '656/43705656',
-             '658/43705658',
-             '652/43705652',
-             '655/43705655',
-             '647/43705647',
-             '653/43705653',
-             '648/43705648',
-             '649/43705649',
-             '651/43705651',
-             '650/43705650']
-
-        for img_url in a:
-            if img_url in item.main_img_url:
-                return True
-        return False
+        return item.main_img_url is not None
 
     # Center Monthly listed in a column
     filters = [price_filter]
+    if args.image_filter:
+        filters.append(img_filter)
     if not args.ignore_cache:
         filters.append(cache_filter)
     res = list(set(
